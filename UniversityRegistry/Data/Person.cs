@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Text;
 
 namespace UniversityRegistry.Data
@@ -7,7 +8,7 @@ namespace UniversityRegistry.Data
     /// <summary>
     /// A class representing a person associated with the university
     /// </summary>
-    public class Person
+    public class Person : INotifyPropertyChanged
     {
         /// <summary>
         /// The next ID to assign to a newly-created person
@@ -15,14 +16,30 @@ namespace UniversityRegistry.Data
         public static uint NextID = 80000000;
 
         /// <summary>
+        /// Event triggered when properties of Person change
+        /// </summary>
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        /// <summary>
         /// The uinque identifier of this person
         /// </summary>
         public uint ID { get; private set; }
 
+        private string firstName;
         /// <summary>
         /// The person's first name
         /// </summary>
-        public string FirstName { get; set; }
+        public string FirstName
+        {
+            get { return firstName; }
+            set
+            {
+                if (firstName == value) return;
+                value = firstName;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("FirstName"));
+            }
+        }
+
 
         /// <summary>
         /// The person's last name
@@ -39,11 +56,27 @@ namespace UniversityRegistry.Data
         /// </summary>
         public bool Active { get; set; }
 
+        private Role role;
         /// <summary>
         /// The person's role
         /// </summary>
-        public Role Role { get; set; }
-        
+        public Role Role
+        {
+            get => role;
+            set
+            {
+                if (role == value) return;
+                role = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Role"));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Role"));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsUndergraduateStudent"));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsGraduateStudent"));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsFaculty"));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsStaff"));
+            }
+        }
+
+
         /// <summary>
         /// Creates a new user, assigning them an ID
         /// </summary>
@@ -51,5 +84,22 @@ namespace UniversityRegistry.Data
         {
             ID = NextID++;
         }
+
+        /// <summary>
+        /// Returns a string identifying the person
+        /// </summary>
+        /// <returns>A string consisting of last name, first name, and ID</returns>
+        public override string ToString()
+        {
+            return $"{LastName}, {FirstName} [{ID}]";
+        }
+
+        public bool IsFaculty
+        {
+            get { return Role == Role.Faculty; }
+            set { Role = Role.Faculty; }
+        }
+
+
     }
 }
